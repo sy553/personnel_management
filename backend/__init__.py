@@ -23,18 +23,7 @@ def create_app():
     app.config.from_object(Config)
     
     # CORS 配置
-    CORS(app, 
-        resources={
-            r"/api/*": {
-                "origins": "http://localhost:5173",
-                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-                "allow_headers": ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"],
-                "expose_headers": ["Content-Range", "X-Total-Count", "Content-Disposition"],
-                "supports_credentials": True,
-                "max_age": 600
-            }
-        }
-    )
+    CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
     
     # 确保上传目录存在
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
