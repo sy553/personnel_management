@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -24,15 +24,12 @@ def create_app(config_class=Config):
     app.config.from_object(Config)
     
     # CORS 配置
-    app.config['CORS_HEADERS'] = 'Content-Type'
     CORS(app, resources={
         r"/*": {
             "origins": ["http://localhost:5173"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_credentials": True,
             "allow_headers": ["Content-Type", "Authorization"],
-            "expose_headers": ["Authorization"],
-            "max_age": 3600,
-            "supports_credentials": True
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
         }
     })
     
@@ -47,6 +44,24 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+    
+    # 添加全局 CORS 处理
+    @app.before_request
+    def handle_preflight():
+        if request.method == "OPTIONS":
+            response = make_response()
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+            response.headers.add('Access-Control-Max-Age', '3600')
+            return response
+
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+        return response
     
     # 确保导入所有模型
     with app.app_context():
