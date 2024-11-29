@@ -11,8 +11,9 @@ migrate = Migrate()
 jwt = JWTManager()
 
 
-def create_app():
+def create_app(config_class=Config):
     app = Flask(__name__)
+    app.config.from_object(config_class)
     
     # 配置日志
     import logging
@@ -23,7 +24,14 @@ def create_app():
     app.config.from_object(Config)
     
     # CORS 配置
-    CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+    CORS(app, resources={
+        r"/*": {
+            "origins": ["http://localhost:5173"],
+            "allow_credentials": True,
+            "allow_headers": ["Content-Type", "Authorization"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+        }
+    })
     
     # 确保上传目录存在
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
