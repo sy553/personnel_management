@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -29,9 +29,16 @@ def create_app(config_class=Config):
             "origins": ["http://localhost:5173"],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
-            "supports_credentials": True
+            "expose_headers": ["Authorization"],
+            "supports_credentials": True,
+            "send_wildcard": False,
+            "max_age": 3600
         }
     })
+    
+    # JWT 配置
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600  # 1小时
+    app.config['JWT_HEADER_TYPE'] = 'Bearer'
     
     # 确保上传目录存在
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -63,7 +70,7 @@ def create_app(config_class=Config):
         from .routes.alert import alert_bp
         from .routes.export import export_bp
         
-        app.register_blueprint(auth_bp, url_prefix='/auth')
+        app.register_blueprint(auth_bp, url_prefix='/api/auth')
         app.register_blueprint(permission_bp, url_prefix='/api/permission')
         app.register_blueprint(department_bp, url_prefix='/api/department')
         app.register_blueprint(employee_bp, url_prefix='/api/employee')
