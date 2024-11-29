@@ -2,9 +2,12 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
 const service = axios.create({
-  baseURL: 'http://localhost:5000',  // 直接使用后端地址
+  baseURL: 'http://localhost:5000',
   timeout: 10000,
-  withCredentials: true  // 允许携带凭证
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 })
 
 service.interceptors.request.use(
