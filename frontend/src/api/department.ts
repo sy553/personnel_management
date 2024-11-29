@@ -4,7 +4,7 @@ import type { Department, ApiResponse } from '@/types/employee'
 // 获取部门列表
 export const getDepartmentList = () => {
   return request<ApiResponse<Department[]>>({
-    url: '/api/department/list',
+    url: '/department/list',
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`

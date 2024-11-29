@@ -53,28 +53,38 @@ def register():
 def login():
     try:
         data = request.get_json()
-        
-        if not data or 'username' not in data or 'password' not in data:
-            return jsonify({'error': 'Missing username or password'}), 400
-            
-        user = User.query.filter_by(username=data['username']).first()
-        
-        if not user or not check_password_hash(user.password, data['password']):
-            return jsonify({'error': 'Invalid username or password'}), 401
-            
-        if not user.is_active:
-            return jsonify({'error': 'Account is disabled'}), 403
-            
-        # 生成访问令牌
-        access_token = create_access_token(identity=str(user.id))
-        
-        return jsonify({
-            'access_token': access_token,
-            'user': user.to_dict()
-        }), 200
-        
+        username = data.get('username')
+        password = data.get('password')
+
+        if not username or not password:
+            return jsonify({
+                'code': 400,
+                'message': '用户名和密码不能为空'
+            }), 400
+
+        user = User.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password, password):
+            access_token = create_access_token(identity=username)
+            return jsonify({
+                'code': 200,
+                'data': {
+                    'token': access_token,
+                    'user': user.to_dict()
+                },
+                'message': '登录成功'
+            }), 200
+        else:
+            return jsonify({
+                'code': 401,
+                'message': '用户名或密码错误'
+            }), 401
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"登录错误: {str(e)}")
+        return jsonify({
+            'code': 500,
+            'message': f'登录失败: {str(e)}'
+        }), 500
 
 @auth_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)

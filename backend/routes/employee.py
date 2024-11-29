@@ -8,9 +8,17 @@ import os
 
 employee_bp = Blueprint('employee', __name__)
 
-@employee_bp.route('/list', methods=['GET'])
-@jwt_required()
+@employee_bp.route('/list', methods=['GET', 'OPTIONS'])
+@cross_origin()
 def get_employee_list():
+    if request.method == 'OPTIONS':
+        # 预检请求处理
+        response = jsonify({'code': 200})
+        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+        return response
+
     try:
         print("收到的请求参数:", request.args)
         print("请求头:", request.headers)
@@ -390,7 +398,7 @@ def get_employee_by_no(employee_no):
 @employee_bp.route('/detail/<string:employee_no>', methods=['GET', 'OPTIONS'])
 @cross_origin()
 def get_employee_detail(employee_no):
-    """根据工���获取员工详情（公开接口）"""
+    """根据工获取员工详情（公开接口）"""
     if request.method == 'OPTIONS':
         response = jsonify({'code': 200})
         return response
@@ -551,7 +559,7 @@ def handle_contract(employee_no):
         
         print("Contract data:", contract_data)
         
-        # ���证必填字段
+        # 证必填字段
         required_fields = ['number', 'type', 'duration', 'start_date', 'end_date', 'sign_date', 'status']
         missing_fields = [field for field in required_fields if not contract_data.get(field)]
         if missing_fields:
@@ -564,7 +572,7 @@ def handle_contract(employee_no):
                 }
             }), 422
             
-        # 处���合同文件
+        # 处合同文件
         if contract_file:
             if contract_file.filename == '':
                 return jsonify({

@@ -1,32 +1,23 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { login } from '@/api/user'
-import type { LoginData, LoginResponse } from '@/api/user'
+import type { LoginData } from '@/api/user'
 import { ElMessage } from 'element-plus'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref(localStorage.getItem('token') || '')
-  const userInfo = ref<LoginResponse['user'] | null>(
-    localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!) : null
-  )
+  const userInfo = ref(localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!) : null)
 
   const loginAction = async (loginData: LoginData) => {
     try {
       const res = await login(loginData)
-      console.log('Login response:', res)
       
-      // 检查响应数据
-      if (!res.data) {
-        throw new Error('登录响应数据为空')
-      }
-
-      // 检查 access_token
-      if (!res.data.access_token) {
-        throw new Error('未获取到访问令牌')
+      if (res.code !== 200 || !res.data) {
+        throw new Error(res.message || '登录失败')
       }
 
       // 保存 token
-      const tokenValue = `Bearer ${res.data.access_token}`
+      const tokenValue = `Bearer ${res.data.token}`
       token.value = tokenValue
       localStorage.setItem('token', tokenValue)
       
@@ -36,14 +27,11 @@ export const useUserStore = defineStore('user', () => {
         localStorage.setItem('userInfo', JSON.stringify(res.data.user))
       }
       
-      console.log('Saved token:', tokenValue)
-      console.log('Saved user info:', res.data.user)
-      ElMessage.success('登录成功')
+      ElMessage.success(res.message || '登录成功')
       return res.data
     } catch (error: any) {
       console.error('Login action error:', error)
-      const errorMessage = error.response?.data?.message || error.message || '登录失败'
-      ElMessage.error(errorMessage)
+      ElMessage.error(error.message || '登录失败')
       throw error
     }
   }

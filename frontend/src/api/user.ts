@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import type { ApiResponse } from '@/types/api'
 
 export interface LoginData {
   username: string
@@ -7,33 +6,28 @@ export interface LoginData {
 }
 
 export interface LoginResponse {
-  access_token: string
-  user: {
-    id: number
-    username: string
-    email: string
-    is_active: boolean
-    created_at: string
-    updated_at: string
-    role: {
+  code: number
+  data: {
+    token: string
+    user: {
       id: number
+      username: string
       name: string
-      description: string
-      permissions: string[]
+      role: string
+      [key: string]: any
     }
   }
+  message: string
 }
 
-// 登录
-export const login = (data: LoginData) => {
+export function login(data: LoginData) {
   return request<LoginResponse>({
-    url: '/api/auth/login',
-    method: 'POST',
+    url: '/auth/login',
+    method: 'post',
     data
   })
 }
 
-// 登出
 export const logout = () => {
   return request({
     url: '/api/auth/logout',
