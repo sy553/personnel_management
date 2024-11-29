@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -23,32 +23,15 @@ def create_app(config_class=Config):
     # 加载配置
     app.config.from_object(Config)
     
-    # 全局 CORS 中间件
-    @app.after_request
-    def cors_handler(response):
-        # 删除可能存在的旧头部
-        if 'Access-Control-Allow-Origin' in response.headers:
-            del response.headers['Access-Control-Allow-Origin']
-        if 'Access-Control-Allow-Headers' in response.headers:
-            del response.headers['Access-Control-Allow-Headers']
-        if 'Access-Control-Allow-Methods' in response.headers:
-            del response.headers['Access-Control-Allow-Methods']
-        if 'Access-Control-Allow-Credentials' in response.headers:
-            del response.headers['Access-Control-Allow-Credentials']
-
-        # 设置新的 CORS 头部
-        response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
-        response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
-        response.headers['Access-Control-Allow-Credentials'] = 'true'
-
-        # 对于预检请求，添加额外的头部
-        if request.method == 'OPTIONS':
-            response.headers['Access-Control-Max-Age'] = '3600'
-            if not response.status_code:
-                response.status_code = 200
-
-        return response
+    # CORS 配置
+    CORS(app, resources={
+        r"/*": {
+            "origins": ["http://localhost:5173"],
+            "allow_credentials": True,
+            "allow_headers": ["Content-Type", "Authorization"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+        }
+    })
     
     # 确保上传目录存在
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)

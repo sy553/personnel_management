@@ -46,7 +46,7 @@ export const getEmployeeList = (params: EmployeeListParams) => {
   console.log('过滤后的参数:', filteredParams)
   
   return request<ApiResponse<EmployeeListData>>({
-    url: '/employee/list',
+    url: '/api/employee/list',
     method: 'GET',
     params: filteredParams,
     headers: {

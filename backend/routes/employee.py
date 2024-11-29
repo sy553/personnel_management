@@ -8,8 +8,8 @@ import os
 
 employee_bp = Blueprint('employee', __name__)
 
-@employee_bp.route('/list', methods=['GET', 'OPTIONS'])
-@cross_origin()
+@employee_bp.route('/list', methods=['GET'])
+@jwt_required()
 def get_employee_list():
     if request.method == 'OPTIONS':
         # 预检请求处理

@@ -3,7 +3,7 @@ import type { LoginData } from '@/types/api'
 
 export function login(data: LoginData) {
   return request({
-    url: '/auth/login',
+    url: '/api/auth/login',
     method: 'post',
     data
   })
