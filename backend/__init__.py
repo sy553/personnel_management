@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -27,9 +27,9 @@ def create_app(config_class=Config):
     CORS(app, resources={
         r"/*": {
             "origins": ["http://localhost:5173"],
-            "allow_credentials": True,
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+            "supports_credentials": True
         }
     })
     
@@ -44,24 +44,6 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    
-    # 添加全局 CORS 处理
-    @app.before_request
-    def handle_preflight():
-        if request.method == "OPTIONS":
-            response = make_response()
-            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
-            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-            response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-            response.headers.add('Access-Control-Max-Age', '3600')
-            return response
-
-    @app.after_request
-    def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-        return response
     
     # 确保导入所有模型
     with app.app_context():
@@ -81,7 +63,7 @@ def create_app(config_class=Config):
         from .routes.alert import alert_bp
         from .routes.export import export_bp
         
-        app.register_blueprint(auth_bp, url_prefix='/api/auth')
+        app.register_blueprint(auth_bp, url_prefix='/auth')
         app.register_blueprint(permission_bp, url_prefix='/api/permission')
         app.register_blueprint(department_bp, url_prefix='/api/department')
         app.register_blueprint(employee_bp, url_prefix='/api/employee')
