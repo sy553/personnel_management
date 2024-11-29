@@ -8,6 +8,7 @@ from flask_jwt_extended import (
 from ..models.user import User
 from .. import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_cors import cross_origin
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -50,14 +51,15 @@ def register():
         return jsonify({'error': str(e)}), 500
 
 @auth_bp.route('/login', methods=['POST', 'OPTIONS'])
+@cross_origin()
 def login():
-    # 处理 OPTIONS 请求
     if request.method == 'OPTIONS':
         response = make_response()
         response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
-        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-        return response, 200
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+        response.headers.add('Access-Control-Max-Age', '3600')
+        return response
 
     try:
         data = request.get_json()

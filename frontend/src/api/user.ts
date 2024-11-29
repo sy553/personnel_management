@@ -1,27 +1,8 @@
 import request from '@/utils/request'
-
-export interface LoginData {
-  username: string
-  password: string
-}
-
-export interface LoginResponse {
-  code: number
-  data: {
-    token: string
-    user: {
-      id: number
-      username: string
-      name: string
-      role: string
-      [key: string]: any
-    }
-  }
-  message: string
-}
+import type { LoginData } from '@/types/api'
 
 export function login(data: LoginData) {
-  return request<LoginResponse>({
+  return request({
     url: '/auth/login',
     method: 'post',
     data

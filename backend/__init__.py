@@ -24,12 +24,15 @@ def create_app(config_class=Config):
     app.config.from_object(Config)
     
     # CORS 配置
+    app.config['CORS_HEADERS'] = 'Content-Type'
     CORS(app, resources={
         r"/*": {
             "origins": ["http://localhost:5173"],
-            "allow_credentials": True,
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+            "expose_headers": ["Authorization"],
+            "max_age": 3600,
+            "supports_credentials": True
         }
     })
     

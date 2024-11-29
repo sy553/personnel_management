@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 import { login } from '@/api/user'
 import type { LoginData } from '@/api/user'
 import { ElMessage } from 'element-plus'
