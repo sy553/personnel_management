@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>预算报表</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: right;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+        .department {
+            text-align: left;
+        }
+        .warning {
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ year }}年{{ month }}月预算报表</h1>
+    <table>
+        <tr>
+            <th class="department">部门</th>
+            <th>总预算</th>
+            <th>工资预算</th>
+            <th>加班预算</th>
+            <th>奖金预算</th>
+            <th>其他预算</th>
+            <th>实际支出</th>
+            <th>执行率</th>
+            <th>员工人数</th>
+            <th>人均预算</th>
+        </tr>
+        {% for dept in departments %}
+        <tr>
+            <td class="department">{{ dept.name }}</td>
+            <td>{{ dept.total_budget }}</td>
+            <td>{{ dept.salary_budget }}</td>
+            <td>{{ dept.overtime_budget }}</td>
+            <td>{{ dept.bonus_budget }}</td>
+            <td>{{ dept.other_budget }}</td>
+            <td>{{ dept.actual_expense }}</td>
+            <td {% if dept.execution_rate|float > 90 %}class="warning"{% endif %}>
+                {{ dept.execution_rate }}
+            </td>
+            <td>{{ dept.employee_count }}</td>
+            <td>{{ dept.per_capita_budget }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html> 

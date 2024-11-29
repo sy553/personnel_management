@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS employee_education (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_no VARCHAR(50) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    school VARCHAR(100) NOT NULL,
+    major VARCHAR(100) NOT NULL,
+    degree VARCHAR(50) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (employee_no) REFERENCES employees(employee_no) ON DELETE CASCADE
+); 
