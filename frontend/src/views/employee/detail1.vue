@@ -142,6 +142,7 @@ const uploadUrl = computed(() =>
 // 加载部门列表
 const loadDepartments = async () => {
   try {
+<<<<<<< HEAD
     console.log('开始加载部门列表')
     const response = await getDepartmentList()
     console.log('部门列表响应:', response)
@@ -156,6 +157,17 @@ const loadDepartments = async () => {
   } catch (error) {
     console.error('加载部门列表失败:', error)
     ElMessage.warning('部门列表加载失败，可能影响部门选择功能')
+=======
+    const res = await getDepartmentList()
+    if (res.code === 200) {
+      departments.value = res.data
+    } else {
+      throw new Error(res.message)
+    }
+  } catch (error) {
+    console.error('加载部门列表失败:', error)
+    ElMessage.error('加载部门列表失败：' + error.message)
+>>>>>>> affba6b97d4c5bcc7a35d4ae0adb7ce3b2706e97
   }
 }
 

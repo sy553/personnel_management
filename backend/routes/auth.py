@@ -1,71 +1,17 @@
-from flask import Blueprint, request, jsonify, make_response
-from flask_jwt_extended import (
-    create_access_token,
-    create_refresh_token,
-    jwt_required,
-    get_jwt_identity
-)
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import create_access_token
+from werkzeug.security import check_password_hash
 from ..models.user import User
-from .. import db
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_cors import cross_origin
 
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/register', methods=['POST'])
-@jwt_required()
-def register():
-    try:
-        data = request.get_json()
-        
-        # 验证必要字段
-        if not all(k in data for k in ['username', 'password', 'email']):
-            return jsonify({'error': 'Missing required fields'}), 400
-            
-        # 检查用户名是否已存在
-        if User.query.filter_by(username=data['username']).first():
-            return jsonify({'error': 'Username already exists'}), 400
-            
-        # 检查邮箱是否已存在
-        if User.query.filter_by(email=data['email']).first():
-            return jsonify({'error': 'Email already exists'}), 400
-            
-        # 创建新用户
-        new_user = User.create_user(
-            username=data['username'],
-            password=data['password'],
-            email=data['email'],
-            role_id=data.get('role_id')  # 角色ID是可选的
-        )
-        
-        db.session.add(new_user)
-        db.session.commit()
-        
-        return jsonify({
-            'message': 'User created successfully',
-            'user': new_user.to_dict()
-        }), 201
-        
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
-@auth_bp.route('/login', methods=['POST', 'OPTIONS'])
-@cross_origin()
+@auth_bp.route('/login', methods=['POST'])
 def login():
-    if request.method == 'OPTIONS':
-        response = make_response()
-        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
-        response.headers.add('Access-Control-Max-Age', '3600')
-        return response
-
     try:
         data = request.get_json()
         username = data.get('username')
         password = data.get('password')
-
+        
         if not username or not password:
             return jsonify({
                 'code': 400,
@@ -73,27 +19,30 @@ def login():
             }), 400
 
         user = User.query.filter_by(username=username).first()
+        
         if user and check_password_hash(user.password, password):
             access_token = create_access_token(identity=username)
             return jsonify({
                 'code': 200,
+                'message': '登录成功',
                 'data': {
                     'token': access_token,
-                    'user': user.to_dict()
-                },
-                'message': '登录成功'
+                    'username': username
+                }
             }), 200
         else:
             return jsonify({
-                'code': 401,
+                'code': 400,
                 'message': '用户名或密码错误'
-            }), 401
-
+            }), 400
+            
     except Exception as e:
-        print(f"登录错误: {str(e)}")
         return jsonify({
             'code': 500,
             'message': f'登录失败: {str(e)}'
+<<<<<<< HEAD
+        }), 500 
+=======
         }), 500
 
 @auth_bp.route('/refresh', methods=['POST'])
@@ -115,10 +64,14 @@ def get_profile():
         return jsonify({'error': 'User not found'}), 404
         
     return jsonify({
-        'id': user.id,
-        'username': user.username,
-        'email': user.email,
-        'role': user.role
+        'code': 200,
+        'data': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role
+        },
+        'message': '获取用户信息成功'
     }), 200
 
 @auth_bp.route('/users', methods=['GET'])
@@ -242,3 +195,4 @@ def toggle_user_status(user_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500 
+>>>>>>> 0d55f71b7cb6d6a5f5625226c81204f383721fcf
