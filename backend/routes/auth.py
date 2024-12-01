@@ -115,10 +115,14 @@ def get_profile():
         return jsonify({'error': 'User not found'}), 404
         
     return jsonify({
-        'id': user.id,
-        'username': user.username,
-        'email': user.email,
-        'role': user.role
+        'code': 200,
+        'data': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role
+        },
+        'message': '获取用户信息成功'
     }), 200
 
 @auth_bp.route('/users', methods=['GET'])
