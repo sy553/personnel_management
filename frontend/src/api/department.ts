@@ -1,10 +1,16 @@
 import request from '@/utils/request'
-import type { Department, ApiResponse } from '@/types/employee'
+import type { Department } from '@/types/employee'
+import type { ApiResponse } from '@/types/api'
+
+export interface DepartmentListData {
+  departments: Department[]
+  total: number
+}
 
 // 获取部门列表
 export const getDepartmentList = () => {
-  return request<ApiResponse<Department[]>>({
-    url: '/department/list',
+  return request<ApiResponse<DepartmentListData>>({
+    url: '/api/department/list',
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`

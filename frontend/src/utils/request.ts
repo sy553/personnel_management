@@ -36,3 +36,29 @@ service.interceptors.response.use(
 )
 
 export default service 
+
+
+// import axios from 'axios'
+// import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
+// import { ElMessage } from 'element-plus'
+
+// const request: AxiosInstance = axios.create({
+//   baseURL: import.meta.env.VITE_API_BASE_URL,
+//   timeout: 10000
+// })
+
+// request.interceptors.request.use(
+//   (config: InternalAxiosRequestConfig) => {
+//     const token = localStorage.getItem('token')
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`
+//     }
+//     return config
+//   },
+//   (error) => {
+//     ElMessage.error('请求发送失败')
+//     return Promise.reject(error)
+//   }
+// )
+
+// export default request

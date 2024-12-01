@@ -101,7 +101,7 @@ import { ElMessage } from 'element-plus'
 import { User, Edit } from '@element-plus/icons-vue'
 import type { FormInstance } from 'element-plus'
 import type { Employee, Department } from '@/types/employee'
-import { getDepartmentList } from '@/api/common'
+import { getDepartmentList } from '@/api/department'
 import type { ApiResponse } from '@/types/api'
 
 interface DepartmentListResponse {
@@ -234,22 +234,6 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.action-buttons {
-  margin-left: auto;
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
+<style lang="scss">
+@import '@/styles/common.scss';
 </style> 

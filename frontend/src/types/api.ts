@@ -2,7 +2,7 @@
 export interface ApiResponse<T> {
   code: number
   data: T
-  message?: string
+  message: string
 }
 
 // API错误响应接口

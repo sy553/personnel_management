@@ -27,6 +27,34 @@ interface EmployeeListData {
   pages: number
 }
 
+// 在现有接口定义后添加
+export interface CreateEmployeeData {
+  name: string
+  employee_no: string
+  gender: string
+  birth_date: string
+  phone: string
+  email: string
+  id_card: string
+  department_id?: number
+  position: string
+  hire_date: string
+  status: string
+  remarks?: string
+}
+
+// 在其他 API 函数之间添加
+export const addEmployee = (data: CreateEmployeeData) => {
+  return request<ApiResponse<Employee>>({
+    url: '/api/employee',
+    method: 'POST',
+    data,
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  })
+}
+
 // 获取员工列表
 export const getEmployeeList = (params: EmployeeListParams) => {
   // 确保必需的参数存在

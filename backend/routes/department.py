@@ -151,7 +151,7 @@ def delete_department(dept_id):
         return jsonify({'error': str(e)}), 500
 
 @department_bp.route('/list', methods=['GET', 'OPTIONS'])
-@jwt_required()
+@cross_origin()
 def list_departments():
     """获取部门列表"""
     try:
@@ -191,4 +191,4 @@ def list_departments():
         return jsonify({
             'code': 500,
             'message': error_msg
-        }), 500 
+        }), 500

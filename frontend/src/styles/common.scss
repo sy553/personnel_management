@@ -1,0 +1,50 @@
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  
+  .el-icon {
+    margin-right: 4px;
+  }
+  
+  .action-buttons,
+  .title-actions,
+  .upload-buttons,
+  .contract-buttons {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.no-data {
+  text-align: center;
+  color: #909399;
+  padding: 20px 0;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.preview-container {
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f7fa;
+}
+
+.preview-dialog {
+  :deep(.el-dialog__body) {
+    padding: 0;
+  }
+}
+
+.loading-container {
+  padding: 20px;
+} 

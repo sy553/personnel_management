@@ -113,8 +113,10 @@ export interface Department {
   description?: string
 }
 
-export interface ApiResponse<T> {
-  code: number
-  message: string
-  data: T
+export interface WorkInfo {
+  department_id?: number
+  position?: string
+  hire_date?: string
+  status?: string
+  remarks?: string
 } 

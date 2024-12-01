@@ -99,7 +99,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Back } from '@element-plus/icons-vue'
 import { getEmployeeDetail, updateEmployeeDetail, addEmployeeEducation, updateEmployeeEducation, deleteEmployeeEducation, addEmployeeTraining, updateEmployeeTraining, deleteEmployeeTraining } from '@/api/employee'
-import { getDepartmentList } from '@/api/common'
+// import { getDepartmentList } from '@/api/department'
 import type { 
   Employee, 
   Contract, 
@@ -172,40 +172,36 @@ const loadEmployee = async () => {
     loading.value = true
     console.log('开始加载员工信息:', employeeNo)
     const response = await getEmployeeDetail(employeeNo)
-    
     console.log('员工详情响应:', response)
-
-    if (response?.data?.code === 200 && response.data.data) {
-      // 确保所有数组字段都有默认值
-      const employeeData = {
-        ...response.data.data,
-        education_history: response.data.data.education_history || [],
-        training_records: response.data.data.training_records || [],
-        work_experience: response.data.data.work_experience || [],
-        position_changes: response.data.data.position_changes || [],
-        reward_punishments: response.data.data.reward_punishments || [],
-        contracts: response.data.data.contracts || [],
-        attachments: response.data.data.attachments || []
+    
+    if (response.code === 200 && response.data) {
+      // 确保所有数组字段都有默认值，避免 undefined 错误
+      employee.value = {
+        ...response.data,
+        education_history: response.data.education_history || [],
+        work_experience: response.data.work_experience || [],
+        training_records: response.data.training_records || [],
+        position_changes: response.data.position_changes || [],
+        reward_punishments: response.data.reward_punishments || [],
+        contracts: response.data.contracts || [],
+        attachments: response.data.attachments || []
       }
-
-      console.log('处理后的员工数据:', employeeData)
-
-      // 更新员工信息
-      employee.value = employeeData
+      console.log('处理后的员工数据:', employee.value)
     } else {
-      console.error('员工详情响应格式错误:', response)
-      throw new Error(response?.data?.message || '加载失败')
+      console.error('员工详情响应错误:', response)
+      throw new Error(response.message || '加载员工信息失败')
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('加载员工信息失败:', error)
+    const errorMessage = (error as AxiosError)?.response?.data?.message 
+      || (error as Error).message 
+      || '加载员工信息失败'
     console.error('错误详情:', {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status,
-      data: error.response?.data?.data,
-      error: error
+      message: errorMessage,
+      response: (error as AxiosError)?.response,
+      data: (error as AxiosError)?.response?.data
     })
-    ElMessage.error(error instanceof Error ? error.message : '加载失败')
+    ElMessage.error(errorMessage)
     router.push('/employee/list')
   } finally {
     loading.value = false
@@ -223,8 +219,6 @@ const updateEmployee = async (updatedData: Partial<Employee>) => {
 
   try {
     loading.value = true
-    
-    // 打印更新的数据，用于调试
     console.log('更新数据:', {
       employeeNo: employee.value.employee_no,
       updatedData
@@ -232,7 +226,7 @@ const updateEmployee = async (updatedData: Partial<Employee>) => {
     
     const response = await updateEmployeeDetail(employee.value.employee_no, updatedData)
     
-    if (response?.data?.code === 200) {
+    if (response.code === 200) {
       ElMessage.success('更新成功')
       // 更新本地数据
       if (employee.value) {
@@ -241,20 +235,24 @@ const updateEmployee = async (updatedData: Partial<Employee>) => {
       // 重新加载员工信息以确保数据同步
       await loadEmployee()
     } else {
-      throw new Error(response?.data?.message || '更新失败')
+      console.error('更新响应错误:', response)
+      throw new Error(response.message || '更新失败')
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('更新员工信息失败:', error)
-    // 显示详细的错误信息
-    const errorMessage = error.response?.data?.message || error.message || '更新失败'
-    console.error('错误详情:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: errorMessage,
-      requestData: error.config?.data
-    })
+    const errorDetails = {
+      status: (error as AxiosError)?.response?.status,
+      data: (error as AxiosError)?.response?.data,
+      message: (error as Error).message,
+      requestData: (error as AxiosError)?.config?.data
+    }
+    console.error('错误详情:', errorDetails)
+    
+    const errorMessage = (error as AxiosError)?.response?.data?.message 
+      || (error as Error).message 
+      || '更新失败'
     ElMessage.error(errorMessage)
-    throw error // 向上传递错误
+    throw error
   } finally {
     loading.value = false
   }
@@ -468,7 +466,7 @@ const handleRewardUpdate = (reward_punishments: RewardPunishmentType[]) => {
 // 附件相关处理函数
 const handleAttachmentsUpdate = (files: File[]) => {
   console.log('添加附件:', files)
-  // 实现文件上传逻辑
+  // 实现文件上传辑
 }
 
 const handleAttachmentPreview = (attachment: Attachment) => {
@@ -557,8 +555,19 @@ const handleDeleteTraining = async (id: number) => {
   }
 }
 
+// 添加生命周期钩子
 onMounted(async () => {
-  await Promise.all([loadDepartments(), loadEmployee()])
+  try {
+    loading.value = true
+    await Promise.all([
+      loadDepartments(),
+      loadEmployee()
+    ])
+  } catch (error) {
+    console.error('初始化数据失败:', error)
+  } finally {
+    loading.value = false
+  }
 })
 </script>
 

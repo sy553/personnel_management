@@ -117,7 +117,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, Plus, Edit, Delete, View } from '@element-plus/icons-vue'
 import { getEmployeeList } from '@/api/employee'
 import type { EmployeeListParams } from '@/api/employee'
-import { getDepartmentList } from '@/api/common'
+import { getDepartmentList } from '@/api/department'
 import type { Employee, Department } from '@/types/employee'
 
 const router = useRouter()
@@ -162,7 +162,6 @@ const loadEmployeeList = async () => {
   try {
     loading.value = true
     
-    // 构建基础参数
     const params: EmployeeListParams = {
       page: pagination.value.page.toString(),
       pageSize: pagination.value.pageSize.toString()
@@ -184,20 +183,29 @@ const loadEmployeeList = async () => {
     console.log('请求参数:', params)
     
     const response = await getEmployeeList(params)
-    console.log('API响应:', response)
+    console.log('API完整响应:', JSON.stringify(response, null, 2))
     
-    if (response.data.code === 200) {
-      employeeList.value = response.data.data.data
-      pagination.value.total = response.data.data.total
-      console.log('员工列表:', employeeList.value)
-      console.log('总数:', pagination.value.total)
+    if (response.code === 200 && response.data) {
+      // 检查数据结构
+      console.log('数据结构:', {
+        hasItems: 'items' in response.data,
+        hasData: 'data' in response.data,
+        dataType: response.data.data ? typeof response.data.data : 'undefined',
+        totalValue: response.data.total
+      })
+      
+      // 根据实际数据结构获取列表数据
+      employeeList.value = response.data.data || response.data.items || []
+      pagination.value.total = response.data.total || 0
+      
+      console.log('最终员工列表:', employeeList.value)
+      console.log('最终总数:', pagination.value.total)
     } else {
-      ElMessage.error(response.data.message || '加载失败')
+      ElMessage.error(response.message || '加载失败')
     }
   } catch (error: any) {
     console.error('加载员工列表失败:', error)
-    console.error('错误详情:', error.response?.data)
-    ElMessage.error(error.response?.data?.message || '加载员工列表失败')
+    ElMessage.error('加载失败')
   } finally {
     loading.value = false
   }
