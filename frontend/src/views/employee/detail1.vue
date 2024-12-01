@@ -99,7 +99,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Back } from '@element-plus/icons-vue'
 import { getEmployeeDetail, updateEmployeeDetail, addEmployeeEducation, updateEmployeeEducation, deleteEmployeeEducation, addEmployeeTraining, updateEmployeeTraining, deleteEmployeeTraining } from '@/api/employee'
-// import { getDepartmentList } from '@/api/department'
+import { getDepartmentList } from '@/api/department'
 import type { 
   Employee, 
   Contract, 
@@ -146,16 +146,16 @@ const loadDepartments = async () => {
     const response = await getDepartmentList()
     console.log('部门列表响应:', response)
     
-    if (response?.data?.code === 200 && Array.isArray(response.data.data)) {
-      departments.value = response.data.data
+    if (response.code === 200) {
+      departments.value = response.data.departments
       console.log('加载到的部门列表:', departments.value)
     } else {
       console.error('部门列表响应格式错误:', response)
-      throw new Error(response?.data?.message || '加载部门列表失败')
+      throw new Error(response.message || '加载部门列表失败')
     }
   } catch (error) {
     console.error('加载部门列表失败:', error)
-    ElMessage.error(error instanceof Error ? error.message : '加载部门列表失败')
+    ElMessage.warning('部门列表加载失败，可能影响部门选择功能')
   }
 }
 

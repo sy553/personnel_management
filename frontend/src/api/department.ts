@@ -11,10 +11,7 @@ export interface DepartmentListData {
 export const getDepartmentList = () => {
   return request<ApiResponse<DepartmentListData>>({
     url: '/api/department/list',
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
+    method: 'GET'
   })
 }
 
@@ -22,10 +19,7 @@ export const getDepartmentList = () => {
 export const getDepartmentDetail = (id: number) => {
   return request<ApiResponse<Department>>({
     url: `/api/department/${id}`,
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
+    method: 'GET'
   })
 }
 
@@ -34,10 +28,7 @@ export const createDepartment = (data: Omit<Department, 'id'>) => {
   return request<ApiResponse<Department>>({
     url: '/api/department',
     method: 'POST',
-    data,
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
+    data
   })
 }
 
@@ -46,10 +37,7 @@ export const updateDepartment = (id: number, data: Partial<Department>) => {
   return request<ApiResponse<Department>>({
     url: `/api/department/${id}`,
     method: 'PUT',
-    data,
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
+    data
   })
 }
 
@@ -57,9 +45,6 @@ export const updateDepartment = (id: number, data: Partial<Department>) => {
 export const deleteDepartment = (id: number) => {
   return request<ApiResponse<null>>({
     url: `/api/department/${id}`,
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
+    method: 'DELETE'
   })
 } 

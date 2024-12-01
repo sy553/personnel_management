@@ -3,6 +3,11 @@ from flask_jwt_extended import jwt_required
 from ..models.department import Department
 from .. import db
 from flask_cors import cross_origin
+import logging
+
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 department_bp = Blueprint('department', __name__)
 
@@ -13,8 +18,10 @@ def get_departments():
     try:
         # 只获取顶级部门，子部门会通过递归获取
         departments = Department.query.filter_by(parent_id=None).all()
+        logger.info(f"成功获取到 {len(departments)} 个部门")
         return jsonify([dept.to_dict() for dept in departments]), 200
     except Exception as e:
+        logger.error(f"获取部门列表失败: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @department_bp.route('/all', methods=['GET', 'OPTIONS'])
